@@ -1,0 +1,117 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Internet Shop</title>
+    <link rel="stylesheet" href="~/Content/stylesheet.css"/>
+</head>
+<body>
+    <div id="content">
+        <div id="header">
+            <div class="topong">
+                <div class="pad">
+                    <img src="~/Common/Images/cart.gif" alt="My Cart" />
+                    <h4><a href="#">VIEW CART</a></h4>
+                    <br />
+                    <span class="txt">Lorem Ipsum Dolore</span>
+                </div>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+            <div class="topong">
+                <div class="pad">
+                    <img src="~/Common/Images/account.gif" alt="Account" />
+                    <h4>@Html.ActionLink("MY ACCOUNT", "PersonalPage", "Main")</h4>
+                    <br />
+                    <span class="txt">Lorem Ipsum Dolore</span>
+                </div>
+            </div>
+            }
+            else
+            {
+                <div class="topong">
+                    <div class="pad">
+                        <img src="~/Common/Images/account.gif" alt="Account" />
+                        <h4>@Html.ActionLink("SIGN IN", "SignIn", "Auth")</h4>
+                        <br />
+                        <span class="txt">Lorem Ipsum Dolore</span>
+                    </div>
+                </div>
+            }
+            <h1><span class="green bigl">I</span>nternet<span class="green bigl">S</span>hop</h1>
+        </div>
+        <div id="menu">
+            <div class="pad">
+                <div class="submit">
+                    <ul>
+                        <li>@Html.ActionLink("HOME", "Index", "Main", new { style="margin: 5px;" })</li>
+                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main", new { style = "margin: 5px;" })</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="maincontent">
+            <div id="introduction">
+                <h2>Suspendisse <span class="green">magna</span> est</h2>
+                <p>
+                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
+                    <br />
+                    <a class="readm" href="#">Read more...</a>
+                </p>
+            </div>
+            <div id="rightside">
+                <h2>Latest <span class="green">News</span></h2>
+                <p>
+                    <span class="date">12.03.2006</span><br />
+                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+                    <a class="readm" href="#">Read more...</a>
+                </p>
+                <p>
+                    <span class="date">11.17.2006</span><br />
+                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+                    <a class="readm" href="#">Read more...</a>
+                </p>
+                <p>
+                    <span class="date">11.05.2006</span><br />
+                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+                    <a class="readm" href="#">Read more...</a>
+                </p>
+            </div>
+            <div id="leftside">
+                <div class="r">
+                    <h2>Ipsum <span class="green">Diam</span></h2>
+                    Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
+                </div>
+                <div class="le">
+                    <h2>Nec <span class="green">auctor</span></h2>
+                    Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
+                </div>
+                <div class="pad">
+                    <h2>Suspendisse <span class="green">magna</span> est</h2>
+                    <p> Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>.</p>
+                    <div class="rs">
+                        <ul>
+                            <li>List line 1</li>
+                            <li>List line 2</li>
+                            <li>
+                                List line 3
+                                <ul>
+                                    <li>Sublist line 1</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <p>
+                        Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
+                        <a class="readm" href="#">Read more...</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
