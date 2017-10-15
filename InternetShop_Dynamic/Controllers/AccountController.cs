@@ -17,6 +17,7 @@ using InternetShop_Dynamic.Models;
 using InternetShop_Dynamic.Providers;
 using InternetShop_Dynamic.Results;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
 
 namespace InternetShop_Dynamic.Controllers
 {
@@ -131,7 +132,7 @@ namespace InternetShop_Dynamic.Controllers
 
                 return Request.CreateResponse(System.Net.HttpStatusCode.OK, "OK");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 List<string> res = new List<string>();
                 res.Add(e.Message);
@@ -194,6 +195,42 @@ namespace InternetShop_Dynamic.Controllers
             }
 
             return Ok();
+        }
+
+        //GET api/Account/UserRoles
+        [Route("UserRoles")]
+        [HttpGet]
+        public async Task<IHttpActionResult> UserRoles()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "Select B.Name from dbo.AspNetUserRoles A inner join dbo.AspNetRoles B On A.RoleId = B.Id Where A.UserId=@uid";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@uid", User.Identity.GetUserId());
+                        await con.OpenAsync();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            List<string> roles = new List<string>();
+
+                            while (rdr.Read())
+                            {
+                                roles.Add(rdr["Name"].ToString());
+                            }
+
+                            return Ok(roles);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // POST api/Account/RemoveLogin

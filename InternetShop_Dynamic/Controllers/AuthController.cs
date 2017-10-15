@@ -93,5 +93,30 @@ namespace InternetShop_Dynamic.Controllers
 
             return View(model);
         }
+
+        public async Task<ActionResult> AccountPage()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Request.Cookies["access_token"].Value);
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                client.BaseAddress = new Uri("http://localhost:13384");
+
+                HttpResponseMessage msg = await client.GetAsync("/api/Account/UserRoles");
+
+                if (msg.IsSuccessStatusCode)
+                {
+                    List<string> roles = await msg.Content.ReadAsAsync<List<string>>();
+
+                    if (roles.Contains("admin"))
+                    {
+                        return RedirectToAction("AdminAccount", "Main");
+                    }
+                }
+            }
+
+            return RedirectToAction("SimpleAccount", "Main");
+        }
     }
 }

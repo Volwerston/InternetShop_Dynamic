@@ -1,158 +1,63 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Internet shop";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Internet Shop</title>
-    <link rel="stylesheet" href="~/Content/stylesheet.css"/>
-</head>
-<body>
-    <div id="content">
-        <div id="header">
-            <div class="topong">
-                <div class="pad">
-                    <img src="~/Common/Images/cart.gif" alt="My Cart" />
-                    <h4><a href="#">VIEW CART</a></h4>
-                    <br />
-                    <span class="txt">Lorem Ipsum Dolore</span>
-                </div>
-            </div>
-            @if (User.Identity.IsAuthenticated)
-            {
-            <div class="topong">
-                <div class="pad">
-                    <img src="~/Common/Images/account.gif" alt="Account" />
-                    <h4>@Html.ActionLink("MY ACCOUNT", "PersonalPage", "Main")</h4>
-                    <br />
-                    <button type="button" id="sign_out">Sign out</button>
-                </div>
-            </div>
-            }
-            else
-            {
-                <div class="topong">
-                    <div class="pad">
-                        <img src="~/Common/Images/account.gif" alt="Account" />
-                        <h4>@Html.ActionLink("SIGN IN", "SignIn", "Auth")</h4>
-                        <br />
-                        <span class="txt">Lorem Ipsum Dolore</span>
-                    </div>
-                </div>
-            }
-            <h1><span class="green bigl">I</span>nternet<span class="green bigl">S</span>hop</h1>
+<div id="maincontent">
+    <div id="introduction">
+        <h2>Suspendisse <span class="green">magna</span> est</h2>
+        <p>
+            Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
+            <br />
+            <a class="readm" href="#">Read more...</a>
+        </p>
+    </div>
+    <div id="rightside">
+        <h2>Latest <span class="green">News</span></h2>
+        <p>
+            <span class="date">12.03.2006</span><br />
+            Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+            <a class="readm" href="#">Read more...</a>
+        </p>
+        <p>
+            <span class="date">11.17.2006</span><br />
+            Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+            <a class="readm" href="#">Read more...</a>
+        </p>
+        <p>
+            <span class="date">11.05.2006</span><br />
+            Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
+            <a class="readm" href="#">Read more...</a>
+        </p>
+    </div>
+    <div id="leftside">
+        <div class="r">
+            <h2>Ipsum <span class="green">Diam</span></h2>
+            Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
         </div>
-        <div id="menu">
-            <div class="pad">
-                <div class="submit">
-                    <ul>
-                        <li>@Html.ActionLink("HOME", "Index", "Main", new { style="margin: 5px;" })</li>
-                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main", new { style = "margin: 5px;" })</li>
-                    </ul>
-                </div>
-            </div>
+        <div class="le">
+            <h2>Nec <span class="green">auctor</span></h2>
+            Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
         </div>
-        <div id="maincontent">
-            <div id="introduction">
-                <h2>Suspendisse <span class="green">magna</span> est</h2>
-                <p>
-                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
-                    <br />
-                    <a class="readm" href="#">Read more...</a>
-                </p>
-            </div>
-            <div id="rightside">
-                <h2>Latest <span class="green">News</span></h2>
-                <p>
-                    <span class="date">12.03.2006</span><br />
-                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
-                    <a class="readm" href="#">Read more...</a>
-                </p>
-                <p>
-                    <span class="date">11.17.2006</span><br />
-                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
-                    <a class="readm" href="#">Read more...</a>
-                </p>
-                <p>
-                    <span class="date">11.05.2006</span><br />
-                    Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. <br />
-                    <a class="readm" href="#">Read more...</a>
-                </p>
-            </div>
-            <div id="leftside">
-                <div class="r">
-                    <h2>Ipsum <span class="green">Diam</span></h2>
-                    Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
-                </div>
-                <div class="le">
-                    <h2>Nec <span class="green">auctor</span></h2>
-                    Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>. Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc.
-                </div>
-                <div class="pad">
-                    <h2>Suspendisse <span class="green">magna</span> est</h2>
-                    <p> Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>.</p>
-                    <div class="rs">
+        <div class="pad">
+            <h2>Suspendisse <span class="green">magna</span> est</h2>
+            <p> Proin tincidunt viverra eros. Phasellus id felis. Proin dui. Etiam tristique. Aliquam erat volutpat. Suspendisse magna est, faucibus et, tincidunt ac, vehicula a, mi. Ut sed enim. Duis volutpat, neque at dictum volutpat, nibh augue ornare velit, nec auctor <a href="#">ipsum diam at nibh</a>.</p>
+            <div class="rs">
+                <ul>
+                    <li>List line 1</li>
+                    <li>List line 2</li>
+                    <li>
+                        List line 3
                         <ul>
-                            <li>List line 1</li>
-                            <li>List line 2</li>
-                            <li>
-                                List line 3
-                                <ul>
-                                    <li>Sublist line 1</li>
-                                </ul>
-                            </li>
+                            <li>Sublist line 1</li>
                         </ul>
-                    </div>
-                    <p>
-                        Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
-                        <a class="readm" href="#">Read more...</a>
-                    </p>
-                </div>
+                    </li>
+                </ul>
             </div>
+            <p>
+                Aenean vel massa eu lorem pretium faucibus. Aenean porttitor, augue non ullamcorper vestibulum, ligula lectus pulvinar nunc, tristique consectetuer leo enim et diam. Aenean lorem lectus, luctus id, volutpat ut, accumsan ac, risus. Phasellus sit amet nunc. <strong>Cum sociis</strong> natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.<br />
+                <a class="readm" href="#">Read more...</a>
+            </p>
         </div>
     </div>
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript">
-
-        function getCookie(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-
-        $(document).ready(function () {
-            $("#sign_out").click(function () {
-                $.ajax({
-                    method: "POST",
-                    url: '/api/Account/Logout',
-                    contentType: "application/json; charset=utf-8",
-                    headers: {
-                        Authorization: 'Bearer ' + getCookie('access_token')
-                    },
-                    success: function () {
-                        document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-                        window.location.href = '@Url.Action("Index", "Main")';
-                    },
-                    error: function (res) {
-                        alert(res.responseText);
-                    }
-                });
-
-            });
-        });
-    </script>
-</body>
-</html>
+</div>

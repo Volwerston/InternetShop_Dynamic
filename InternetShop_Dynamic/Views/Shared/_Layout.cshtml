@@ -1,0 +1,99 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/stylesheet.css" />
+</head>
+<body>
+    <div id="content">
+        <div id="header">
+            <div class="topong">
+                <div class="pad">
+                    <img src="~/Common/Images/cart.gif" alt="My Cart" />
+                    <h4><a href="#">BASKET</a></h4>
+                </div>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="topong">
+                    <div class="pad">
+                        <img src="~/Common/Images/account.gif" alt="Account" />
+                        <h4>@Html.ActionLink("MY ACCOUNT", "AccountPage", "Auth")</h4>
+                        <button type="button" id="sign_out">Sign out</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="topong">
+                    <div class="pad">
+                        <img src="~/Common/Images/account.gif" alt="Account" />
+                        <h4>@Html.ActionLink("SIGN IN", "SignIn", "Auth")</h4>
+                    </div>
+                </div>
+            }
+            <h1><span class="green bigl">I</span>nternet<span class="green bigl">S</span>hop</h1>
+        </div>
+        <div id="menu">
+            <div class="pad">
+                <div class="submit">
+                    <ul>
+                        <li>@Html.ActionLink("HOME", "Index", "Main", new { style = "margin: 5px;" })</li>
+                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main", new { style = "margin: 5px;" })</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div>
+            @RenderBody()
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        $(document).ready(function () {
+            $("#sign_out").click(function () {
+                $.ajax({
+                    method: "POST",
+                    url: '/api/Account/Logout',
+                    contentType: "application/json; charset=utf-8",
+                    headers: {
+                        Authorization: 'Bearer ' + getCookie('access_token')
+                    },
+                    success: function () {
+                        document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                        window.location.href = '@Url.Action("Index", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+
+            });
+        });
+    </script>
+    @RenderSection("scripts", false)
+</body>
+</html>

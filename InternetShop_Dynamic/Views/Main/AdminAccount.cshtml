@@ -1,0 +1,321 @@
+﻿@using InternetShop_Dynamic.Models
+@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string rawJson = JsonConvert.SerializeObject(ViewData["goods"]);
+}
+
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+
+<div class="row" style="margin-top: 15px;">
+    <div class="col-sm-10 col-sm-push-1">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                            Goods
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <div class="row" style="margin: 5px 0 20px 0">
+                            <div class="col-sm-4 col-sm-push-1">
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGoodModal">Add</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table id="goods">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Title</th>
+                                        <th>Price</th>
+                                        <th>Discount (%)</th>
+                                        <th>In stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var good in (List<Good>)ViewData["goods"])
+                                    {
+                                        <tr style="cursor: pointer" onclick="editProduct('@good.Id')">
+                                            <td>@good.Id</td>
+                                            <td>@good.Title</td>
+                                            <td>@good.Price</td>
+                                            <td>@good.Discount</td>
+                                            <td>@good.IsInStock</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                            Emailed Newsletters
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                        commodo consequat.
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                            Collapsible Group 3
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                        commodo consequat.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="addGoodModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-10 col-sm-push-1">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="title" placeholder="Title" />
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" name="description" placeholder="Description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="price" placeholder="Price" />
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="discount" placeholder="Discount (1-99)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="in_stock" class="control-label">Is in stock:</label>
+                                <input type="checkbox" name="in_stock" />
+                            </div>
+
+                            <label for="category" class="control-label">Category:</label>
+                            <div class="form-group">
+                                <select class="form-control" name="category">
+                                    @foreach (var category in (List<Category>)ViewData["categories"])
+                                    {
+                                        <option value="@category.Id">@category.Title</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="add_good" class="btn btn-success">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editGoodModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-10 col-sm-push-1">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <input type="hidden" name="edit_id" value="0" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="edit_title" placeholder="Title" />
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" name="edit_description" placeholder="Description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="edit_price" placeholder="Price" />
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="edit_discount" placeholder="Discount (1-99)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_in_stock" class="control-label">Is in stock:</label>
+                                <input type="checkbox" name="edit_in_stock" />
+                            </div>
+
+                            <label for="edit_category" class="control-label">Category:</label>
+                            <div class="form-group">
+                                <select class="form-control" name="edit_category">
+                                    @foreach (var category in (List<Category>)ViewData["categories"])
+                                    {
+                                        <option value="@category.Id">@category.Title</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="save_good" class="btn btn-success">Save Good</button>
+                <button type="button" id="delete_good" class="btn btn-error">Delete Good</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js">
+    </script>
+    <script type="text/javascript">
+        var goods = JSON.parse('@Html.Raw(rawJson)');
+
+        function seedModal(obj) {
+            $('input[name="edit_id"]').val(obj.Id);
+            $('input[name="edit_title"]').val(obj.Title);
+            $('textarea[name="edit_description"]').val(obj.Description);
+            $('input[name="edit_price"]').val(obj.Price);
+
+            if (obj.IsInStock) {
+                $('input[name="edit_in_stock"]').attr("checked", "checked");
+            }
+            else {
+                if ($('input[name="edit_in_stock"]').is(":checked")) {
+                    $('input[name="edit_in_stock"]').removeAttr("checked");
+                }
+            }
+
+            $('input[name="edit_discount"]').val(obj.Discount);
+            $('select[name="edit_category"]').val(obj.CategoryId);
+        }
+
+        function editProduct(id) {
+            for (let i = 0; i < goods.length; ++i) {
+                if (goods[i].Id == id) {
+                    seedModal(goods[i]);
+                    $("#editGoodModal").modal("show");
+                    break;
+                }
+            }
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        $(document).ready(function () {
+            $("#goods").DataTable();
+
+            $("#add_good").click(function () {
+
+                var toPass = {
+                    Title: $('input[name="title"]').val(),
+                    Description: $('textarea[name="description"]').val(),
+                    Price: $('input[name="price"]').val(),
+                    Discount: $('input[name="discount"]').val(),
+                    IsInStock: $('input[name="in_stock"]').is(":checked"),
+                    CategoryId: $('select[name="category"]').val()
+                };
+
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/Goods/AddGood',
+                    contentType: 'application/json; charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + getCookie('access_token')
+                    },
+                    data: JSON.stringify(toPass),
+                    success: function (res) {
+                        location.href = '@Url.Action("AdminAccount", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+            });
+
+            $("#save_good").click(function () {
+
+                var toPass = {
+                    Id: $('input[name="edit_id"]').val(),
+                    Title: $('input[name="edit_title"]').val(),
+                    Description: $('textarea[name="edit_description"]').val(),
+                    Price: $('input[name="edit_price"]').val(),
+                    Discount: $('input[name="edit_discount"]').val(),
+                    IsInStock: $('input[name="edit_in_stock"]').is(":checked"),
+                    CategoryId: $('select[name="edit_category"]').val()
+                };
+
+                $.ajax({
+                    method: 'PUT',
+                    url: '/api/Goods/EditGood',
+                    contentType: 'application/json; charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + getCookie('access_token')
+                    },
+                    data: JSON.stringify(toPass),
+                    success: function (res) {
+                        location.href='@Url.Action("AdminAccount", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+            });
+
+            $("#delete_good").click(function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: '/api/Goods/DeleteGood?id=' + $('input[name="edit_id"]').val(),
+                    contentType: 'application/json; charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + getCookie('access_token')
+                    },
+                    success: function (res) {
+                        location.href = '@Url.Action("AdminAccount", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
