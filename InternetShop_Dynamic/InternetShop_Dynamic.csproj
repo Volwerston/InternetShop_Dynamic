@@ -318,6 +318,7 @@
     <Content Include="Views\Auth\RestorePassword.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Main\AdminAccount.cshtml" />
+    <Content Include="Views\Main\Products.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

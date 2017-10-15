@@ -1,10 +1,12 @@
 ﻿using InternetShop_Dynamic.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -85,6 +87,50 @@ namespace InternetShop_Dynamic.Controllers
                         return Ok();
                     }
                 }
+            }
+            catch(Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        //POST /api/Goods/Search
+        [Route("Search")]
+        public async Task<IHttpActionResult> Search(JObject options)
+        {
+            try
+            {
+                StringBuilder query = BuildRequestQuery(options);
+
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(query.ToString(), con))
+                    {
+                        con.Open();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            List<Good> toReturn = new List<Good>();
+
+                            while (rdr.Read())
+                            {
+                                Good g = new Good();
+
+                                g.Id = Convert.ToInt32(rdr["Id"].ToString());
+                                g.Title = rdr["Title"].ToString();
+                                g.Description = rdr["Description"].ToString();
+                                g.Price = Convert.ToDouble(rdr["Price"].ToString());
+                                g.Discount = rdr["Discount"] == DBNull.Value ? 0 : Convert.ToDouble(rdr["Discount"].ToString());
+                                g.IsInStock = Convert.ToBoolean(rdr["InStock"].ToString());
+
+                                toReturn.Add(g);
+                            }
+
+                            return Ok(toReturn);
+                        }
+                    }
+                }
+
             }
             catch(Exception e)
             {
@@ -225,6 +271,41 @@ namespace InternetShop_Dynamic.Controllers
                 return InternalServerError(e);
             }
         }
+
+        #region Helper Functions
+
+        private StringBuilder BuildRequestQuery(JObject options)
+        {
+            StringBuilder query = new StringBuilder();
+
+            int lastId = options["LastId"].Value<int>();
+            string title = options["Title"].Value<string>();
+            string category = options["Category"].Value<string>();
+
+            if (category == "0"
+                && string.IsNullOrEmpty(title))
+            {
+                query.Append(string.Format("select top 10 * from Goods where (Id>{0})", lastId));
+            }
+            else if (category == "0"
+                && !string.IsNullOrEmpty(title))
+            {
+                query.Append(string.Format("select top 10 * from Goods where (Id>{0}) and (Title like '%{1}%')", lastId, title));
+            }
+            else if (category != "0"
+                && string.IsNullOrEmpty(title))
+            {
+                query.Append(string.Format("select top 10 A.Title, A.Description, A.Price, A.Discount, A.Id, A.InStock from Goods A inner join Categories B on A.CategoryId=B.Id where (A.Id>{0}) And (B.Id = {1})", lastId, category));
+            }
+            else
+            {
+                query.Append(string.Format("select top 10 A.Title, A.Description, A.Price, A.Discount, A.Id, A.InStock from Goods A inner join Categories B on A.CategoryId=B.Id where (A.Id>{0}) And (B.Id = {1}) And (A.Title like '%{2}%')", lastId, category, title));
+            }
+
+            return query;
+        }
+
+        #endregion
 
     }
 }

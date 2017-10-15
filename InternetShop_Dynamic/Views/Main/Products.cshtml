@@ -1,0 +1,107 @@
+﻿@using InternetShop_Dynamic.Models
+
+@{
+    ViewBag.Title = "Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-6 col-sm-push-3" style="border: 1px solid lightgrey; border-radius: 3px; padding: 10px; margin: 10px;">
+        <div class="form-horizontal" style="padding: 10px;">
+            <div class="form-group">
+                <input type="text" class="form-control" name="title" placeholder="Title" />
+            </div>
+            <div class="form-group">
+                <select class="form-control" name="category">
+                    <option value="0">---</option>
+                    @foreach (var category in (List<Category>)ViewData["categories"])
+                    {
+                        <option value="@category.Id">@category.Title</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-push-3">
+                    <button id="search_btn" type="button" class="btn btn-success btn-block">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="container">
+
+</div>
+
+@section scripts{   
+<script type="text/javascript">  
+
+    var lastId = 0;
+    var endReached = false;
+
+    function getDivForGood(obj) {
+        return  '<div class="col-sm-4" style="border: 3px solid white; background-color: lightgrey; cursor: pointer; padding: 10px">'
+            + '<h3 class="text-center">' + obj.Title + '</h3>'
+            + '<p>' + obj.Description + '</p>'
+            + '<h4>Price: ' + (obj.Price * (1 - obj.Discount / 100)).toFixed(2) + ' $</h4>'
+            + '<button type="button" class="btn btn-default btn-sm btn-block">BUY</button>'
+            + '</div>';
+    }
+
+    function search() {
+
+        var toPass = {
+            Title: $('input[name="title"]').val(),
+            Category: $('select[name="category"]').val(),
+            LastId: lastId
+        };
+
+        $.ajax({
+            method: 'POST',
+            url: '/api/Goods/Search',
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            data: JSON.stringify(toPass),
+            success: function (res) {
+                if (res.length > 0) {
+                    lastId = res[res.length - 1].Id;
+
+                    for (let i = 0; i < res.length; ++i) {
+                        $("#container").append(getDivForGood(res[i]));
+                    }
+                }
+                else {
+                    if ($("#container").children().length == 0) {
+                        $("#container").append('<p style="text-align: center;">No data was found</p>');
+                    }
+                    endReached = true;
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        search();
+
+        $("#search_btn").click(function () {
+            lastId = 0;
+            endReached = false;
+            $("#container").empty();
+
+            search();
+        });
+
+
+        $(document).scroll(function () {
+            if ($(document).height() - ($(window).height() + $(window).scrollTop()) < 50) {
+                if (!endReached) {
+                    search();
+                }
+            }
+        });
+    });
+</script> 
+}

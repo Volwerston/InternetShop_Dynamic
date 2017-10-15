@@ -45,5 +45,27 @@ namespace InternetShop_Dynamic.Controllers
         {
             return View();
         }
+
+        public async Task<ActionResult> Products()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                client.BaseAddress = new Uri("http://localhost:13384");
+
+                HttpResponseMessage msg = await client.GetAsync("/api/Goods/Categories");
+
+                List<Category> categories = new List<Category>();
+
+                if (msg.IsSuccessStatusCode)
+                {
+                    categories = await msg.Content.ReadAsAsync<List<Category>>();
+                }
+
+                ViewData["categories"] = categories;
+            }
+                return View();
+        }
     }
 }
