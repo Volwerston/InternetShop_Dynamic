@@ -16,6 +16,7 @@ using Microsoft.Owin.Security.OAuth;
 using InternetShop_Dynamic.Models;
 using InternetShop_Dynamic.Providers;
 using InternetShop_Dynamic.Results;
+using Newtonsoft.Json;
 
 namespace InternetShop_Dynamic.Controllers
 {
@@ -116,22 +117,26 @@ namespace InternetShop_Dynamic.Controllers
 
         // POST api/Account/ChangePassword
         [Route("ChangePassword")]
-        public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
+        public async Task<HttpResponseMessage> ChangePassword(ChangePasswordBindingModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
+                    model.NewPassword);
 
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
-                model.NewPassword);
-            
-            if (!result.Succeeded)
+                if (!result.Succeeded)
+                {
+                    return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, new List<string>(result.Errors));
+                }
+
+                return Request.CreateResponse(System.Net.HttpStatusCode.OK, "OK");
+            }
+            catch(Exception e)
             {
-                return GetErrorResult(result);
+                List<string> res = new List<string>();
+                res.Add(e.Message);
+                return Request.CreateResponse(System.Net.HttpStatusCode.InternalServerError, res);
             }
-
-            return Ok();
         }
 
         // POST api/Account/SetPassword
@@ -258,9 +263,9 @@ namespace InternetShop_Dynamic.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -321,23 +326,29 @@ namespace InternetShop_Dynamic.Controllers
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
-        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
+        public async Task<HttpResponseMessage> Register(RegisterBindingModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+
+                IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+
+                if (!result.Succeeded)
+                {
+                    return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, new List<string>(result.Errors));
+                }
+
+            }
+            catch (Exception e)
+            {
+                List<string> toReturn = new List<string>();
+                toReturn.Add(e.Message);
+
+                return Request.CreateResponse(System.Net.HttpStatusCode.InternalServerError, toReturn);
             }
 
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
-
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            return Ok();
+            return Request.CreateResponse(System.Net.HttpStatusCode.OK, "OK");
         }
 
         // POST api/Account/RegisterExternal
@@ -357,6 +368,7 @@ namespace InternetShop_Dynamic.Controllers
                 return InternalServerError();
             }
 
+
             var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user);
@@ -368,8 +380,9 @@ namespace InternetShop_Dynamic.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
+
             return Ok();
         }
 
@@ -393,12 +406,7 @@ namespace InternetShop_Dynamic.Controllers
 
         private IHttpActionResult GetErrorResult(IdentityResult result)
         {
-            if (result == null)
-            {
-                return InternalServerError();
-            }
-
-            if (!result.Succeeded)
+            if (result != null && !result.Succeeded)
             {
                 if (result.Errors != null)
                 {
@@ -407,17 +415,9 @@ namespace InternetShop_Dynamic.Controllers
                         ModelState.AddModelError("", error);
                     }
                 }
-
-                if (ModelState.IsValid)
-                {
-                    // No ModelState errors are available to send, so just return an empty BadRequest.
-                    return BadRequest();
-                }
-
-                return BadRequest(ModelState);
             }
 
-            return null;
+            return BadRequest(ModelState);
         }
 
         private class ExternalLoginData

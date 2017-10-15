@@ -1,9 +1,21 @@
 ﻿@model InternetShop_Dynamic.Models.RegisterBindingModel
+@using Newtonsoft.Json;
 
 @{
     Layout = null;
     Html.EnableClientValidation(true);
     Html.EnableUnobtrusiveJavaScript(true);
+
+    List<string> errors = new List<string>();
+
+    if (ViewData.ContainsKey("errors"))
+    {
+        errors = (List<string>)ViewData["errors"];
+    }
+
+    string toParse = JsonConvert.SerializeObject(errors);
+    toParse.Replace("\'", "\\'");
+    toParse.Replace("\"", "\\\"");
 }
 
 <!DOCTYPE html>
@@ -78,5 +90,18 @@
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery.validate.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var resp = $("<div />").html('@toParse').text();
+            var errors = JSON.parse(resp);
+
+            for (let i = 0; i < errors.length; ++i) {
+                alert(errors[i]);
+            }
+
+        });
+    </script>
 </body>
 </html>

@@ -27,7 +27,7 @@
                     <img src="~/Common/Images/account.gif" alt="Account" />
                     <h4>@Html.ActionLink("MY ACCOUNT", "PersonalPage", "Main")</h4>
                     <br />
-                    <span class="txt">Lorem Ipsum Dolore</span>
+                    <button type="button" id="sign_out">Sign out</button>
                 </div>
             </div>
             }
@@ -113,5 +113,46 @@
             </div>
         </div>
     </div>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        $(document).ready(function () {
+            $("#sign_out").click(function () {
+                $.ajax({
+                    method: "POST",
+                    url: '/api/Account/Logout',
+                    contentType: "application/json; charset=utf-8",
+                    headers: {
+                        Authorization: 'Bearer ' + getCookie('access_token')
+                    },
+                    success: function () {
+                        document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                        window.location.href = '@Url.Action("Index", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+
+            });
+        });
+    </script>
 </body>
 </html>
