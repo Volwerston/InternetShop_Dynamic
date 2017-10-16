@@ -76,6 +76,41 @@
                 $("#photo_container").append('<img src="http://nabsw.org/global_graphics/album-placeholder.jpg" alt="Image Not Found" class="img-responsive" />');
             }
         });
+
+
+        $("#buy").click(function(){
+        
+            if(parseInt($('input[name="items"]').val()) <= 0){
+                alert("Number of items cannot be a non-positive value");
+                return;
+            }
+
+            var toPass = {
+                Item1: {
+                    Id: '@Model.Id',
+                    CategoryId: '@Model.CategoryId',
+                    Title: '@Model.Title',
+                    Description: '@Model.Description',
+                    IsInStock: '@Model.IsInStock',
+                    Price: '@Model.Price',
+                    Discount: '@Model.Discount'
+                },
+                Item2: $('input[name="items"]').val()
+            };
+        
+            $.ajax({
+                method: 'POST',
+                url: '/Main/AddProductToBasket',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(toPass),
+                success: function(res){
+                    alert('Products successfully added to basket.');
+                },
+                error: function(res){
+                    alert(res.responseText);
+                }
+            });
+        });
     });
 
 </script>        

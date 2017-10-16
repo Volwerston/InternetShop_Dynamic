@@ -76,6 +76,49 @@ namespace InternetShop_Dynamic.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult AddProductToBasket(BasketParams data)
+        {
+            try
+            {
+                if (Session["basket"] != null)
+                {
+                    Dictionary<string, BasketParams> basket = (Dictionary<string, BasketParams>)Session["basket"];
+
+                    if (basket.ContainsKey(data.Item1.Title))
+                    {
+                        var toAdd = new BasketParams()
+                        {
+                            Item1 = data.Item1,
+                            Item2 = data.Item2 + basket[data.Item1.Title].Item2
+                        };
+
+                        basket[data.Item1.Title] = toAdd;
+                    }
+                    else
+                    {
+                        basket.Add(data.Item1.Title, data);
+                    }
+
+                    Session["basket"] = basket;
+                }
+                else
+                {
+                    Dictionary<string, BasketParams> basket = new Dictionary<string, BasketParams>();
+
+                    basket.Add(data.Item1.Title, data);
+
+                    Session["basket"] = basket;
+                }
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
         public async Task<ActionResult> AddPhoto(int id, HttpPostedFileBase photo)
         {
             try
@@ -123,13 +166,15 @@ namespace InternetShop_Dynamic.Controllers
 
             if (nl.AllUsers)
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     SendGlobalNewsletter(nl, template);
                 });
             }
             else
             {
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     SendNewsletterToUser(nl, new UserDto() { Email = nl.SpecificEmail }, template);
                 });
             }
@@ -156,12 +201,20 @@ namespace InternetShop_Dynamic.Controllers
 
                 ViewData["categories"] = categories;
             }
-                return View();
+            return View();
         }
 
+        #region Helper classes
+
+        public class BasketParams
+        {
+            public Good Item1 { get; set; }
+            public int Item2 { get; set; }
+        }
+
+        #endregion
+
         #region Helper functions
-
-
         [NonAction]
         private void SendGlobalNewsletter(Newsletter nl, StringBuilder template)
         {
@@ -207,7 +260,7 @@ namespace InternetShop_Dynamic.Controllers
 
 
         [NonAction]
-        private static void SendMessage(string msgTo,string msgSubject,string msgBody)
+        private static void SendMessage(string msgTo, string msgSubject, string msgBody)
         {
             string smtpHost = "smtp.gmail.com";
             int smtpPort = 587;
@@ -225,7 +278,7 @@ namespace InternetShop_Dynamic.Controllers
             MailMessage message = new MailMessage(msgFrom, msgTo, msgSubject, msgBody);
 
             message.IsBodyHtml = true;
-            
+
 
             try
             {
