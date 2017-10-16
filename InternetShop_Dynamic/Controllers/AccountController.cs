@@ -18,6 +18,8 @@ using InternetShop_Dynamic.Providers;
 using InternetShop_Dynamic.Results;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using System.Text;
+using System.Net;
 
 namespace InternetShop_Dynamic.Controllers
 {
@@ -114,6 +116,64 @@ namespace InternetShop_Dynamic.Controllers
                 Logins = logins,
                 ExternalLoginProviders = GetExternalLogins(returnUrl, generateState)
             };
+        }
+
+        //GET /api/Account/FindUsers
+        [Route("FindUsers")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> FindUsers([FromUri] string id)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                Dictionary<string, object> cmdParameters = new Dictionary<string, object>();
+
+                if (!string.IsNullOrEmpty(id) &&  id!="all")
+                {
+                    sb.Append("select * from dbo.AspNetUsers where Id=@id");
+                    cmdParameters.Add("@id", id);
+                }
+                else
+                {
+                    sb.Append("select * from dbo.AspNetUsers");
+                }
+
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(sb.ToString(), con))
+                    {
+
+                        foreach(var kvp in cmdParameters)
+                        {
+                            cmd.Parameters.AddWithValue(kvp.Key, kvp.Value);
+                        }
+
+                        con.Open();
+
+                        List<UserDto> users = new List<UserDto>();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            while (rdr.Read())
+                            {
+                                UserDto u = new UserDto();
+
+                                u.Id = rdr["Id"].ToString();
+                                u.Email = rdr["Email"].ToString();
+
+                                users.Add(u);
+                            }
+
+                            return Request.CreateResponse(HttpStatusCode.OK, users);
+                        }
+                    }
+                }
+
+            }
+            catch(Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
+            }
         }
 
         // POST api/Account/ChangePassword

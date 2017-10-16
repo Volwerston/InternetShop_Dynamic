@@ -66,10 +66,29 @@
                 </div>
                 <div id="collapse2" class="panel-collapse collapse">
                     <div class="panel-body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat.
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-push-2">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="email_heading" placeholder="Email heading" />
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="email_text" placeholder="Email text"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email_all_users" class="control-label">send to all users:</label>
+                                        <input type="checkbox" name="email_all_users" />
+                                    </div>
+                                    <label for="email_specific_user" class="control-label">specific user:</label>
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" name="email_specific_user" placeholder="Email (ignore for all users)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="button" class="btn btn-success col-sm-6 col-sm-push-3" id="send_newsletter" value="Send"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,6 +329,32 @@
                     },
                     success: function (res) {
                         location.href = '@Url.Action("AdminAccount", "Main")';
+                    },
+                    error: function (res) {
+                        alert(res.responseText);
+                    }
+                });
+            });
+
+            $("#send_newsletter").click(function () {
+
+                var toPass = {
+                    Heading: $('input[name="email_heading"]').val(),
+                    Text: $('textarea[name="email_text"]').val(),
+                    AllUsers: $('input[name="email_all_users"]').is(":checked"),
+                    SpecificEmail: $('input[name="email_specific_user"]').val()
+                };
+
+                $.ajax({
+                    method: 'POST',
+                    url: '/Main/SendNewsletter',
+                    headers: {
+                        'Authorization': 'Bearer ' + getCookie('access_token')
+                    },
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(toPass),
+                    success: function (res) {
+                        alert("Newsletter successfully delivered");
                     },
                     error: function (res) {
                         alert(res.responseText);

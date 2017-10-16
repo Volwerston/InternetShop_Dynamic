@@ -1,8 +1,12 @@
 ﻿using InternetShop_Dynamic.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -46,6 +50,37 @@ namespace InternetShop_Dynamic.Controllers
             return View();
         }
 
+        [Authorize]
+        [HttpPost]
+        public ActionResult SendNewsletter(Newsletter nl)
+        {
+            StringBuilder template = new StringBuilder();
+
+            using (FileStream fs = new FileStream(Server.MapPath("~/Common/Templates/newsletter.html"), FileMode.Open, FileAccess.Read))
+            {
+                using (StreamReader rdr = new StreamReader(fs))
+                {
+                    template.Append(rdr.ReadToEnd());
+                }
+            }
+
+
+            if (nl.AllUsers)
+            {
+                Task.Run(() => {
+                    SendGlobalNewsletter(nl, template);
+                });
+            }
+            else
+            {
+                Task.Run(() => {
+                    SendNewsletterToUser(nl, new UserDto() { Email = nl.SpecificEmail }, template);
+                });
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
+        }
+
         public async Task<ActionResult> Products()
         {
             using (HttpClient client = new HttpClient())
@@ -67,5 +102,84 @@ namespace InternetShop_Dynamic.Controllers
             }
                 return View();
         }
+
+        #region Helper functions
+
+
+        [NonAction]
+        private void SendGlobalNewsletter(Newsletter nl, StringBuilder template)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Request.Cookies["access_token"].Value);
+
+                    client.BaseAddress = new Uri("http://localhost:13384");
+
+                    HttpResponseMessage msg = client.GetAsync("/api/Account/FindUsers?id=all").Result;
+
+                    if (msg.IsSuccessStatusCode)
+                    {
+                        List<UserDto> users = msg.Content.ReadAsAsync<List<UserDto>>().Result;
+
+                        foreach (var user in users)
+                        {
+                            Task.Run(() => { SendNewsletterToUser(nl, user, template); });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        [NonAction]
+        private void SendNewsletterToUser(Newsletter nl, UserDto user, StringBuilder template)
+        {
+            StringBuilder localTemplate = new StringBuilder(template.ToString());
+
+            localTemplate = localTemplate.Replace("{email}", user.Email);
+            localTemplate = localTemplate.Replace("{heading}", nl.Heading.ToUpper());
+            localTemplate = localTemplate.Replace("{text}", nl.Text);
+
+            SendMessage(user.Email, "Internet Shop Newsletter", localTemplate.ToString());
+        }
+
+
+        [NonAction]
+        private static void SendMessage(string msgTo,string msgSubject,string msgBody)
+        {
+            string smtpHost = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUserName = "btsemail1@gmail.com";
+            string smtpUserPass = "btsadmin";
+
+            SmtpClient client = new SmtpClient(smtpHost, smtpPort);
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(smtpUserName, smtpUserPass);
+            client.EnableSsl = true;
+
+            string msgFrom = smtpUserName;
+
+
+            MailMessage message = new MailMessage(msgFrom, msgTo, msgSubject, msgBody);
+
+            message.IsBodyHtml = true;
+            
+
+            try
+            {
+                client.Send(message);
+            }
+            catch
+            {
+            }
+        }
+
+        #endregion
     }
 }
