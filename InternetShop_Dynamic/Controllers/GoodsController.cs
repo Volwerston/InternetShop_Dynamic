@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
 
@@ -55,7 +56,7 @@ namespace InternetShop_Dynamic.Controllers
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError(e);
             }
@@ -88,7 +89,7 @@ namespace InternetShop_Dynamic.Controllers
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError(e);
             }
@@ -132,7 +133,7 @@ namespace InternetShop_Dynamic.Controllers
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError(e);
             }
@@ -146,7 +147,7 @@ namespace InternetShop_Dynamic.Controllers
         {
             try
             {
-                using(SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 {
                     string cmdString = "Update Goods Set Title=@t, Description=@d, InStock=@is, Price=@p, Discount=@di, CategoryId=@ci Where Id=@id";
 
@@ -167,7 +168,7 @@ namespace InternetShop_Dynamic.Controllers
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError(e);
             }
@@ -193,7 +194,7 @@ namespace InternetShop_Dynamic.Controllers
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError(e);
             }
@@ -232,6 +233,129 @@ namespace InternetShop_Dynamic.Controllers
                 }
             }
             catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        //GET /api/Goods/Good/{id}
+        [Route("Good/{id}")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetGood(int id)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "select * from Goods Where Id = @id";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        await con.OpenAsync();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            if (rdr.Read())
+                            {
+                                Good g = new Good();
+
+                                g.Id = Convert.ToInt32(rdr["Id"].ToString());
+                                g.Title = rdr["Title"].ToString();
+                                g.Description = rdr["Description"].ToString();
+                                g.Price = Convert.ToDouble(rdr["Price"].ToString());
+                                g.Discount = rdr["Discount"] == DBNull.Value ? 0 : Convert.ToDouble(rdr["Discount"].ToString());
+                                g.CategoryId = Convert.ToInt32(rdr["CategoryId"].ToString());
+                                g.IsInStock = Convert.ToBoolean(rdr["InStock"].ToString());
+
+                                return Ok(g);
+                            }
+                            else
+                            {
+                                throw new Exception("Good with this Id not found");
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        //PUT /api/Goods/AddPhoto/{id}
+        [Route("AddPhoto/{id}")]
+        [HttpPut]
+        public async Task<IHttpActionResult> AddPhoto(int id, byte[] photo)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = @"If(Exists(Select Id from Goods_Details where GoodId = @id))
+                                    Begin
+                                    Update Goods_Details Set Photo=@p Where GoodId=@id
+                                    End
+                                    Else Begin 
+                                    Insert Into Goods_Details Values(@id, @p)
+                                    End";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.Parameters.AddWithValue("@p", photo);
+
+                        con.Open();
+
+                        await cmd.ExecuteNonQueryAsync();
+
+                        return Ok();
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        //GET /api/Goods/Photo/{id}
+        [Route("Photo/{id}")]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> GetPhoto(int id)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "Select Photo from Goods_Details Where GoodId=@id";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+
+                        con.Open();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            if (rdr.Read())
+                            {
+                                byte[] img = (byte[])rdr["Photo"];
+                                string toReturn = "data:image/jpg;base64, " + Convert.ToBase64String(img);
+
+                                return Ok(toReturn);
+                            }
+                            else
+                            {
+                                throw new Exception("Image not found.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
             {
                 return InternalServerError(e);
             }

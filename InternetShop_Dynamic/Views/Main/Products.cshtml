@@ -39,11 +39,10 @@
     var endReached = false;
 
     function getDivForGood(obj) {
-        return  '<div class="col-sm-4" style="border: 3px solid white; background-color: lightgrey; cursor: pointer; padding: 10px">'
+        return  '<div onclick="location.href=\'/Main/Product/' + obj.Id + '\';" class="col-sm-4" style="border: 3px solid white; background-color: lightgrey; cursor: pointer; padding: 10px">'
             + '<h3 class="text-center">' + obj.Title + '</h3>'
             + '<p>' + obj.Description + '</p>'
             + '<h4>Price: ' + (obj.Price * (1 - obj.Discount / 100)).toFixed(2) + ' $</h4>'
-            + '<button type="button" class="btn btn-default btn-sm btn-block">BUY</button>'
             + '</div>';
     }
 

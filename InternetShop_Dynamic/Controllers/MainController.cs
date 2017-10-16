@@ -45,6 +45,62 @@ namespace InternetShop_Dynamic.Controllers
         }
 
         [Authorize]
+        public async Task<ActionResult> Product(int id)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Request.Cookies["access_token"].Value);
+
+                    client.BaseAddress = new Uri("http://localhost:13384");
+
+                    HttpResponseMessage msg = await client.GetAsync("/api/Goods/Good/" + id);
+
+                    if (msg.IsSuccessStatusCode)
+                    {
+                        Good g = await msg.Content.ReadAsAsync<Good>();
+                        return View(g);
+                    }
+                    else
+                    {
+                        throw new Exception("Product with this id not found");
+                    }
+                }
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Main");
+            }
+        }
+
+        public async Task<ActionResult> AddPhoto(int id, HttpPostedFileBase photo)
+        {
+            try
+            {
+                byte[] toPass = new byte[(int)photo.InputStream.Length];
+                photo.InputStream.Read(toPass, 0, (int)photo.InputStream.Length);
+
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    client.BaseAddress = new Uri("http://localhost:13384");
+
+                    HttpResponseMessage msg = await client.PutAsJsonAsync("/api/Goods/AddPhoto/" + id, toPass);
+                }
+
+                return RedirectToAction("Product", "Main", new { id = id });
+            }
+            catch
+            {
+                return RedirectToAction("Product", "Main", new { id = id });
+            }
+        }
+
+        [Authorize]
         public ActionResult SimpleAccount()
         {
             return View();
