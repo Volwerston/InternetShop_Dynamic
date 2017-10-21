@@ -10,6 +10,11 @@
 
         </div>
         <div class="row" style="margin-top: 15px;" id="overall_price"></div>
+        <div class="row" style="margin-top: 15px;">
+            <div class="col-sm-4 col-sm-push-4">
+                <button type="button" id="purchase" class="btn btn-success btn-block">Purchase</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -113,6 +118,24 @@
                 }
 
             });
+
+
+            $("#purchase").click(function () {
+
+                $.ajax({
+                    method: 'POST',
+                    url: '/Basket/Purchase',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(goods),
+                    success: function (res) {
+                        alert("Items successfully purchased");
+                        setTimeout(function () { location.href = '@Url.Action("Index","Main")'; }, 2500);
+                    },
+                    error: function (res) {
+                        alert(res.statusText);
+                    }
+                });
+            });
         }
 
         $(document).ready(function () {
@@ -131,13 +154,15 @@
                     }
                     else {
                         $("#basket_container").append('<p class="text-center">No products were found.</p>');
+                        $("#purchase").attr("disabled", true);
                     }
 
                     bindEvents();
                     calculateOverallPrice();
                 },
                 error: function (res) {
-                    alert(res.responseText);
+                    alert(res.statusText);
+                    $("#purchase").attr("disabled", true);
                 }
             });
         });

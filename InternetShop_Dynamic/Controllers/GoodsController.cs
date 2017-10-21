@@ -95,6 +95,7 @@ namespace InternetShop_Dynamic.Controllers
             }
         }
 
+
         //POST /api/Goods/Search
         [Route("Search")]
         public async Task<IHttpActionResult> Search(JObject options)
@@ -174,6 +175,7 @@ namespace InternetShop_Dynamic.Controllers
             }
         }
 
+        // DELETE api/Goods/DeleteGood?id=5
         [Authorize]
         [HttpDelete]
         [Route("DeleteGood")]
@@ -285,6 +287,7 @@ namespace InternetShop_Dynamic.Controllers
         }
 
         //PUT /api/Goods/AddPhoto/{id}
+        [Authorize]
         [Route("AddPhoto/{id}")]
         [HttpPut]
         public async Task<IHttpActionResult> AddPhoto(int id, byte[] photo)
@@ -323,7 +326,6 @@ namespace InternetShop_Dynamic.Controllers
         //GET /api/Goods/Photo/{id}
         [Route("Photo/{id}")]
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IHttpActionResult> GetPhoto(int id)
         {
             try

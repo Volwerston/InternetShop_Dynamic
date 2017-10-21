@@ -237,18 +237,23 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\BasketController.cs" />
     <Compile Include="Controllers\GoodsController.cs" />
+    <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Auxiliary\BasketParams.cs" />
+    <Compile Include="Models\Auxiliary\Interfaces\IDtoFactory.cs" />
     <Compile Include="Models\Auxiliary\PasswordRecoveryItem.cs" />
+    <Compile Include="Models\Auxiliary\UserLogItemFactory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Good.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Newsletter.cs" />
     <Compile Include="Models\UserDto.cs" />
+    <Compile Include="Models\UserLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
@@ -328,6 +333,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\Classes\" />
+    <Folder Include="Views\Log\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

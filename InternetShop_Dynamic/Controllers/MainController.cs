@@ -44,7 +44,7 @@ namespace InternetShop_Dynamic.Controllers
             return View();
         }
 
-        [Authorize]
+        
         public async Task<ActionResult> Product(int id)
         {
             try
@@ -53,7 +53,6 @@ namespace InternetShop_Dynamic.Controllers
                 {
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Request.Cookies["access_token"].Value);
 
                     client.BaseAddress = new Uri("http://localhost:13384");
 
@@ -199,7 +198,7 @@ namespace InternetShop_Dynamic.Controllers
         {
             StringBuilder localTemplate = new StringBuilder(template.ToString());
 
-            localTemplate = localTemplate.Replace("{email}", user.Email);
+            localTemplate = localTemplate.Replace("{email}", "customer");
             localTemplate = localTemplate.Replace("{heading}", nl.Heading.ToUpper());
             localTemplate = localTemplate.Replace("{text}", nl.Text);
 
