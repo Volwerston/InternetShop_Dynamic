@@ -427,7 +427,13 @@ namespace InternetShop_Dynamic.Controllers
         {
             try
             {
-                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser()
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Name = model.Name,
+                    Surname = model.Surname
+                };
 
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 

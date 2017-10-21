@@ -60,5 +60,50 @@ namespace InternetShop_Dynamic.Controllers
                 return InternalServerError(e);
             }
         }
+
+        [Authorize]
+        [Route("GetUserLog")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetUserLog()
+        {
+            List<UserLogItem> toReturn = new List<UserLogItem>();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    using(SqlCommand cmd = new SqlCommand("Select * from UserPurchaseLog where UserId=@id", con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", User.Identity.GetUserId());
+
+                        await con.OpenAsync();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+
+                            while (rdr.Read())
+                            {
+                                UserLogItem item = new UserLogItem();
+
+                                item.Id = Convert.ToInt32(rdr["Id"].ToString());
+                                item.Title = rdr["Title"].ToString();
+                                item.UserId = rdr["UserId"].ToString();
+                                item.Price = double.Parse(rdr["Price"].ToString());
+                                item.Items = int.Parse(rdr["Items"].ToString());
+                                item.PurchaseTime = Convert.ToDateTime(rdr["PurchaseTime"].ToString());
+
+                                toReturn.Add(item);
+                            }
+
+                            return Ok(toReturn);
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
     }
 }

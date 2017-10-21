@@ -63,6 +63,7 @@
 
         function resetValues() {
             if ($("#basket_container").children().length == 0) {
+                $("#purchase").attr("disabled", true);
                 $("#basket_container").append('<p class="text-center">No products were found.</p>');
             }
 

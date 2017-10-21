@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewBag.Title = "SimpleAccount";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+
+<div class="row" style="margin-top: 15px;">
+    <div class="col-sm-10 col-sm-push-1">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                            Purchase List
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="row">
+                            <table id="log">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Items</th>
+                                        <th>Price</th>
+                                        <th>Purchase time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log_container"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{    
+<script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js">
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            method: 'GET',
+            url: '/api/Log/GetUserLog',
+            headers: {
+                'Authorization': 'Bearer ' + getCookie('access_token')
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (res) {
+                for (let i = 0; i < res.length; ++i) {
+                    $("#log_container").append('<tr><td>' + res[i].Title + '</td><td>' + res[i].Items + '</td><td>' + res[i].Price + '</td><td>' + res[i].PurchaseTime + '</td></tr>');
+                }
+                $("#log").DataTable();
+            },
+            error: function (res) {
+                alert(res.statusText);
+            }
+        });
+    });
+</script> 
+}
