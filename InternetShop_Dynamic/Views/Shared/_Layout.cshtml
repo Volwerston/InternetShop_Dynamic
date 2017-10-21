@@ -15,7 +15,7 @@
             <div class="topong">
                 <div class="pad">
                     <img src="~/Common/Images/cart.gif" alt="My Cart" />
-                    <h4><a href="#">BASKET</a></h4>
+                    <h4>@Html.ActionLink("BASKET", "Basket", "Basket", null,null)</h4>
                 </div>
             </div>
             @if (User.Identity.IsAuthenticated)
@@ -23,7 +23,7 @@
                 <div class="topong">
                     <div class="pad">
                         <img src="~/Common/Images/account.gif" alt="Account" />
-                        <h4>@Html.ActionLink("MY ACCOUNT", "AccountPage", "Auth")</h4>
+                        <h4>@Html.ActionLink("MY ACCOUNT", "AccountPage", "Auth", null,null)</h4>
                         <button type="button" id="sign_out">Sign out</button>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="topong">
                     <div class="pad">
                         <img src="~/Common/Images/account.gif" alt="Account" />
-                        <h4>@Html.ActionLink("SIGN IN", "SignIn", "Auth")</h4>
+                        <h4>@Html.ActionLink("SIGN IN", "SignIn", "Auth", null, null)</h4>
                     </div>
                 </div>
             }
@@ -43,8 +43,8 @@
             <div class="pad">
                 <div class="submit">
                     <ul>
-                        <li>@Html.ActionLink("HOME", "Index", "Main", new { style = "margin: 5px;" })</li>
-                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main", new { style = "margin: 5px;" })</li>
+                        <li>@Html.ActionLink("HOME", "Index", "Main", null, new { style = "margin: 5px;" })</li>
+                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main",null, new { style = "margin: 5px;" })</li>
                     </ul>
                 </div>
             </div>

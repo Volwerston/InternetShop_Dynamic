@@ -71,7 +71,7 @@ namespace InternetShop_Dynamic.Controllers
             {
                 using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 {
-                    string cmdString = "INSERT INTO Goods VALUES(@t,@d,@p,@di,@is,@ci);";
+                    string cmdString = "INSERT INTO Goods VALUES(@p, @di, @d, @is, @t, @ci);";
 
                     using (SqlCommand cmd = new SqlCommand(cmdString, con))
                     {

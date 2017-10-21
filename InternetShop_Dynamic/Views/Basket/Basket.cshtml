@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "Basket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-10 col-sm-push-1">
+        <div class="row" style="margin-top: 15px;" id="basket_container">
+
+        </div>
+        <div class="row" style="margin-top: 15px;" id="overall_price"></div>
+    </div>
+</div>
+
+@section scripts{
+
+<script type="text/javascript">
+
+    (function(){
+        var goods = null;
+
+        function getDivForGood(obj) {
+            var toReturn = '<div class="col-sm-10 col-sm-push-1" id="item_' + obj.Item1.Id + '" style="border: 1px solid black; margin: 0;">';
+            toReturn += '<span class="glyphicon glyphicon-remove pull-right" style="cursor:pointer;" id="delete_' + obj.Item1.Id + '"></span>';
+            toReturn += '<h3 class="text-center">' + obj.Item1.Title + '</h3>';
+            toReturn += '<p class="text-center">' + obj.Item1.Description + '</p>';
+            toReturn += '<div class="row"><label for="items_' + obj.Item1.Id + '" class="control-label col-sm-2">Items: </label>';
+            toReturn += '<div class="col-sm-4"><input type="number" class="form-control" name="items_' + obj.Item1.Id + '" value="' + obj.Item2 + '" /></div>';
+            toReturn += '<div class="col-sm-4"><button type="button" class="btn btn-block btn-info" id="save_' + obj.Item1.Id + '">OK</button></div>';
+            toReturn += '</div>';
+            toReturn += '<p class="text-center" style="margin-top: 10px;"> Price per unit: ' + (obj.Item1.Price * (1 - obj.Item1.Discount / 100)).toFixed(2) + ' $</p>';
+            toReturn += '</div>';
+
+            return toReturn;
+        }
+
+        function saveChanges() {
+            $.ajax({
+                method: 'POST',
+                url: '/Basket/Change',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(goods)
+            });
+
+            return true;
+        }
+
+        function calculateOverallPrice() {
+            var price = 0;
+
+            for (let i = 0; i < goods.length; ++i) {
+                price += (goods[i].Item2 * (goods[i].Item1.Price * (1 - goods[i].Item1.Discount / 100)).toFixed(2)).toFixed(2);
+            }
+
+            $("#overall_price").append('<h4 class="text-center">Overall price: ' + price + ' $</h4>');
+        }
+
+        function resetValues() {
+            if ($("#basket_container").children().length == 0) {
+                $("#basket_container").append('<p class="text-center">No products were found.</p>');
+            }
+
+
+            $("#overall_price").empty();
+            calculateOverallPrice();
+        }
+
+        function bindEvents() {
+
+            $('span[id^="delete"]').click(function () {
+
+                var id = $(this).attr('id').split('_')[1];
+
+                for (let i = 0; i < goods.length; ++i) {
+                    if (goods[i].Item1.Id == id) {
+                        goods.splice(i, 1);
+                        break;
+                    }
+                }
+
+
+                if (saveChanges()) {
+                    alert("Changes successfully saved");
+                    $("#item_" + id).remove();
+
+                    resetValues();
+                }
+            });
+
+            $('button[id^="save"]').click(function () {
+
+                var id = $(this).attr('id').split('_')[1];
+
+                var items = $('input[name="items_' + id + '"]').val();
+
+                if (parseInt(items) <= 0) {
+                    alert('You cannot specify a non-positive number of goods');
+                    return;
+                }
+
+                for (let i = 0; i < goods.length; ++i) {
+                    if (goods[i].Item1.Id == id) {
+                        goods[i].Item2 = items;
+                        break;
+                    }
+                }
+
+                if (saveChanges()) {
+                    alert("Changes successfully saved");
+
+                    resetValues();
+                }
+
+            });
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                method: 'GET',
+                url: '/Basket/GetGoods',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (res) {
+                    goods = res;
+
+                    if (goods.length > 0) {
+                        for (let i = 0; i < goods.length; ++i) {
+                            $("#basket_container").append(getDivForGood(goods[i]));
+                        }
+                    }
+                    else {
+                        $("#basket_container").append('<p class="text-center">No products were found.</p>');
+                    }
+
+                    bindEvents();
+                    calculateOverallPrice();
+                },
+                error: function (res) {
+                    alert(res.responseText);
+                }
+            });
+        });
+    })();
+</script>    
+ 
+    
+}

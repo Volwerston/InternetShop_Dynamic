@@ -235,6 +235,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\BasketController.cs" />
     <Compile Include="Controllers\GoodsController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Global.asax.cs">
@@ -323,6 +324,7 @@
     <Content Include="Views\Main\AdminAccount.cshtml" />
     <Content Include="Views\Main\Products.cshtml" />
     <Content Include="Views\Main\Product.cshtml" />
+    <Content Include="Views\Basket\Basket.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

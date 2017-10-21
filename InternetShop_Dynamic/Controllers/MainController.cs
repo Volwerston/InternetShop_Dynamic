@@ -76,48 +76,6 @@ namespace InternetShop_Dynamic.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult AddProductToBasket(BasketParams data)
-        {
-            try
-            {
-                if (Session["basket"] != null)
-                {
-                    Dictionary<string, BasketParams> basket = (Dictionary<string, BasketParams>)Session["basket"];
-
-                    if (basket.ContainsKey(data.Item1.Title))
-                    {
-                        var toAdd = new BasketParams()
-                        {
-                            Item1 = data.Item1,
-                            Item2 = data.Item2 + basket[data.Item1.Title].Item2
-                        };
-
-                        basket[data.Item1.Title] = toAdd;
-                    }
-                    else
-                    {
-                        basket.Add(data.Item1.Title, data);
-                    }
-
-                    Session["basket"] = basket;
-                }
-                else
-                {
-                    Dictionary<string, BasketParams> basket = new Dictionary<string, BasketParams>();
-
-                    basket.Add(data.Item1.Title, data);
-
-                    Session["basket"] = basket;
-                }
-
-                return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
-            }
-            catch (Exception e)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, e.Message);
-            }
-        }
 
         public async Task<ActionResult> AddPhoto(int id, HttpPostedFileBase photo)
         {
@@ -203,16 +161,6 @@ namespace InternetShop_Dynamic.Controllers
             }
             return View();
         }
-
-        #region Helper classes
-
-        public class BasketParams
-        {
-            public Good Item1 { get; set; }
-            public int Item2 { get; set; }
-        }
-
-        #endregion
 
         #region Helper functions
         [NonAction]
