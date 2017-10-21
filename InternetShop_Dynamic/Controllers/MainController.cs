@@ -15,11 +15,6 @@ namespace InternetShop_Dynamic.Controllers
 {
     public class MainController : Controller
     {
-        // GET: Main
-        public ActionResult Index()
-        {
-            return View();
-        }
 
         [Authorize]
         public async Task<ActionResult> AdminAccount()
@@ -71,7 +66,7 @@ namespace InternetShop_Dynamic.Controllers
             }
             catch
             {
-                return RedirectToAction("Index", "Main");
+                return RedirectToAction("Products", "Main");
             }
         }
 

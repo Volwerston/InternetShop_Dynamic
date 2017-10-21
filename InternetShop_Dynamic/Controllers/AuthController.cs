@@ -44,7 +44,7 @@ namespace InternetShop_Dynamic.Controllers
 
                     if (msg.IsSuccessStatusCode)
                     {
-                        return RedirectToAction("Index", "Main");
+                        return RedirectToAction("Products", "Main");
                     }
                     else
                     {
