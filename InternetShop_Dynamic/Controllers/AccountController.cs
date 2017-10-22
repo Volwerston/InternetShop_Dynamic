@@ -176,8 +176,117 @@ namespace InternetShop_Dynamic.Controllers
             }
         }
 
+        [Route("AddPasswordRestorationEntry")]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> Add(string email)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "Insert into RestorePasswordLog Values(@uid, @em, @d)";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+
+                        Guid guid = Guid.NewGuid();
+
+                        cmd.Parameters.AddWithValue("@uid", guid.ToString());
+                        cmd.Parameters.AddWithValue("@em", email);
+                        cmd.Parameters.AddWithValue("@d", DateTime.Now);
+
+                        await con.OpenAsync();
+                        await cmd.ExecuteNonQueryAsync();
+
+                        return Request.CreateResponse(HttpStatusCode.OK, guid.ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
+        [Route("EmailExists")]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> EmailExists([FromUri] string email)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "Select Count(Id) from AspNetUsers Where Email=@mail";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@mail", email);
+
+                        await con.OpenAsync();
+
+                        bool res = (int)(await cmd.ExecuteScalarAsync()) > 0;
+
+                        return Request.CreateResponse(HttpStatusCode.OK, res);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
+        //GET /api/Account/GetPasswordRestoreEntry
+        [Route("GetPasswordRestoreEntry")]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> GetPasswordRestoreEntry([FromUri] string guid)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = @"select A.Guid, A.Email, A.AddingTime, B.Id as UserId
+                                        from RestorePasswordLog A
+                                        inner join AspNetUsers B
+                                        On A.Email = B.Email
+                                        where A.Guid=@guid";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@guid", guid);
+
+                        await con.OpenAsync();
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            RestorePasswordEntry en = new RestorePasswordEntry();
+
+                            if (rdr.Read())
+                            {
+                                en.UserId = rdr["UserId"].ToString();
+                                en.AddingTime = Convert.ToDateTime(rdr["AddingTime"].ToString());
+                                en.Email = rdr["Email"].ToString();
+                                en.Guid = rdr["Guid"].ToString();
+                            }
+
+
+                            return Request.CreateResponse(HttpStatusCode.OK, en);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
         // POST api/Account/ChangePassword
         [Route("ChangePassword")]
+        [AllowAnonymous]
         public async Task<HttpResponseMessage> ChangePassword(ChangePasswordBindingModel model)
         {
             try
@@ -202,21 +311,27 @@ namespace InternetShop_Dynamic.Controllers
 
         // POST api/Account/SetPassword
         [Route("SetPassword")]
-        public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> SetPassword(RestorePasswordEntry model)
         {
-            if (!ModelState.IsValid)
+
+            bool res = await SetNullPassword(model.UserId);
+            if (res)
             {
-                return BadRequest(ModelState);
+
+                IdentityResult result = await UserManager.AddPasswordAsync(model.UserId, model.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Internal server error occured.Please try again");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, "OK");
             }
-
-            IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
-
-            if (!result.Succeeded)
+            else
             {
-                return GetErrorResult(result);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Internal server error occured.Please try again");
             }
-
-            return Ok();
         }
 
         // POST api/Account/AddExternalLogin
@@ -589,6 +704,31 @@ namespace InternetShop_Dynamic.Controllers
                 byte[] data = new byte[strengthInBytes];
                 _random.GetBytes(data);
                 return HttpServerUtility.UrlTokenEncode(data);
+            }
+        }
+
+        private async Task<bool> SetNullPassword(string userId)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                {
+                    string cmdString = "Update AspNetUsers Set PasswordHash=NULL Where Id=@id";
+
+                    using (SqlCommand cmd = new SqlCommand(cmdString, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", userId);
+
+                        await con.OpenAsync();
+                        await cmd.ExecuteNonQueryAsync();
+
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
