@@ -130,7 +130,7 @@
                     data: JSON.stringify(goods),
                     success: function (res) {
                         alert("Items successfully purchased");
-                        setTimeout(function () { location.href = '@Url.Action("Index","Main")'; }, 2500);
+                        setTimeout(function () { location.href = '@Url.Action("Products","Main")'; }, 2500);
                     },
                     error: function (res) {
                         alert(res.statusText);

@@ -82,7 +82,7 @@
                     },
                     success: function (res) {
                         setCookie('access_token', res.access_token, 3);
-                        location.href = '@Url.Action("Index", "Main", null)';
+                        location.href = '@Url.Action("Products", "Main", null)';
                     },
                     error: function (xhr, error, message) {
                         alert("Wrong email and/or password");

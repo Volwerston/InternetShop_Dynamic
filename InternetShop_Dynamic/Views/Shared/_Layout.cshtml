@@ -43,8 +43,7 @@
             <div class="pad">
                 <div class="submit">
                     <ul>
-                        <li>@Html.ActionLink("HOME", "Index", "Main", null, new { style = "margin: 5px;" })</li>
-                        <li>@Html.ActionLink("PRODUCTS", "Products", "Main",null, new { style = "margin: 5px;" })</li>
+                        <li>@Html.ActionLink("HOME", "Products", "Main", null, new { style = "margin: 5px;" })</li>
                     </ul>
                 </div>
             </div>
@@ -93,7 +92,7 @@
                             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                         }
 
-                        window.location.href = '@Url.Action("Index", "Main")';
+                        window.location.href = '@Url.Action("Products", "Main")';
                     },
                     error: function (res) {
                         alert(res.responseText);
